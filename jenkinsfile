@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'SERVICE_NAME', defaultValue: '', description: 'Specify the name of the service to build')
+    }
+
+    stages {
+        stage('Build Docker Compose') {
+            steps {
+                script {
+                    // Set the service name to a variable
+                    def serviceName = params.SERVICE_NAME.trim()
+
+                    // Ensure the SERVICE_NAME parameter is provided
+                    if (serviceName.isEmpty()) {
+                        error("SERVICE_NAME parameter is required. Please provide a service name.")
+                    }
+
+                    // Validate the service name (optional)
+                    //if (!['service1', 'service2'].contains(serviceName)) {
+                        //error("Invalid service name. Supported services: service1, service2.")
+                    //}
+
+                    // Build the Docker Compose file with the specified service
+                    sh "docker-compose build ${serviceName}"
+                }
+            }
+        }
+    }
+}
